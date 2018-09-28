@@ -1,7 +1,7 @@
 'use strict';
 
 
-function fastbootExpressMiddleware(distPath, options, html) {
+function fastbootExpressMiddleware(distPath, options) {
   let opts = options;
 
   if (arguments.length === 1) {
@@ -23,13 +23,12 @@ function fastbootExpressMiddleware(distPath, options, html) {
     fastboot = new FastBoot({
       distPath: opts.distPath,
       resilient: opts.resilient,
-      html: opts.html
     });
   }
 
   return function(req, res, next) {
     let path = req.url;
-    fastboot.visit(path, { request: req, response: res, html: html })
+    fastboot.visit(path, { request: req, response: res, html: opts.html})
       .then(success, failure);
 
     function success(result) {
