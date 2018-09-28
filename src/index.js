@@ -22,13 +22,13 @@ function fastbootExpressMiddleware(distPath, options) {
     let FastBoot = require('fastboot');
     fastboot = new FastBoot({
       distPath: opts.distPath,
-      resilient: opts.resilient
+      resilient: opts.resilient,
     });
   }
 
   return function(req, res, next) {
     let path = req.url;
-    fastboot.visit(path, { request: req, response: res })
+    fastboot.visit(path, { request: req, response: res, html: opts.html})
       .then(success, failure);
 
     function success(result) {
@@ -37,16 +37,16 @@ function fastbootExpressMiddleware(distPath, options) {
       responseBody.then(body => {
         let headers = result.headers;
         let statusMessage = result.error ? 'NOT OK ' : 'OK ';
-    
+
         for (var pair of headers.entries()) {
           res.set(pair[0], pair[1]);
         }
-    
+
         if (result.error) {
           log("RESILIENT MODE CAUGHT:", result.error.stack);
           next(result.error);
         }
-    
+
         log(result.statusCode, statusMessage + path);
         res.status(result.statusCode);
 
